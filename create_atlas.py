@@ -63,7 +63,7 @@ def main(file_names):
             width += img.size[0]
             height = max(height, img.size[1])
 
-    res = np.ones((height, width, 3), dtype=np.uint8) * 255
+    res = np.zeros((height, width, 4), dtype=np.uint8)
     x = 0
     y = 0
     root = ET.Element("Regions")
@@ -73,7 +73,9 @@ def main(file_names):
         w, h = img.size[:2]
         ET.SubElement(root, "Region", attrib={"name": name, "x": str(x), "y": str(y)
             , "width": str(w), "height": str(h)})
-        res[y:y + h, x:x + w] = np.array(img)
+        arr = np.ones((h, w, 4)) * 255
+        arr[:, :, :-1] = np.array(img)
+        res[y:y + h, x:x + w] = arr
         x += w
     tree = ET.ElementTree(root)
     tree.write("res/atlas.xml", encoding="utf-8", xml_declaration=True)
