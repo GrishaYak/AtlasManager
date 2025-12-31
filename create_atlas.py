@@ -105,7 +105,14 @@ def main(image_names, xml_names):
             images.append(img.convert('RGBA'))
             width += img.size[0]
             height = max(height, img.size[1])
-
+    ind = -1
+    for i in range(len(image_names)):
+        if "font.png" in image_names[i]:
+            ind = i
+            break
+    if ind != -1:
+        image_names = [image_names[ind]] + image_names[:ind] + image_names[ind + 1:]
+        images = [images[ind]] + images[:ind] + images[ind + 1:]
     res = np.zeros((height, width, 4), dtype=np.uint8)
     x = 0
     y = 0
