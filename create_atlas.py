@@ -5,6 +5,7 @@ from os import path, listdir
 import numpy as np
 import xml.etree.ElementTree as ET
 from disassemble_atlas import dissasemble_atlas
+import json
 
 def create_w():
     global w
@@ -86,13 +87,6 @@ def main(image_names, xml_names):
     if not image_names:
         return
     global out_dir
-    # if out_dir is None:
-    #     least = min(file_names, key=len).replace('\\', '/')
-    #     out_dir = least[:least.rfind('/')]
-    #     last_dir = out_dir[out_dir.rfind('/') + 1:]
-    #     if last_dir in {'images', 'ims'}:
-    #         out_dir = out_dir[:-len(last_dir) - 1]
-    #     out_dir += '/atlas'
     out_dir = mydir + '/atlas'
 
     images = []
@@ -146,12 +140,28 @@ def main(image_names, xml_names):
         
         x += w
 
-    if not os.path.exists(out_dir):
-        os.mkdir(out_dir)
     tree = ET.ElementTree(root)
     tree.write(f"{out_dir}/atlas.xml", encoding="utf-8", xml_declaration=True)
     atlas = Image.fromarray(res)
     atlas.save(f"{out_dir}/atlas.png")
+
+
+def getInAndOut():
+    global out_dir, initial_dir
+    if path.exists('dirs.json'):
+        with open('dirs.json', encoding='utf8') as f:
+            d = json.load(f)
+            out_dir = d['out']
+            initial_dir = d['in']
+    else:
+        with open('dirs.json', 'w', encoding='utf8') as f:
+            initial_dir=path.dirname(path.realpath(__file__)) + '/images'
+            out_dir = path.dirname(path.realpath(__file__)) + '/atlas'
+            json.dump({'in':initial_dir, 'out':out_dir}, f)
+    if not path.exists(initial_dir):
+        os.mkdir(initial_dir)
+    if not path.exists(out_dir):
+        os.mkdir(out_dir)
 
 if __name__ == '__main__':
     mydir = path.dirname(path.realpath(__file__))
@@ -159,5 +169,6 @@ if __name__ == '__main__':
     out_dir = None
     w = None
     image_formates = '.jpg .png .gif .webp'.split(' ')
+    getInAndOut()
     create_w()
     w.mainloop()
