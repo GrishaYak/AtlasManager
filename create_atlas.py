@@ -86,8 +86,6 @@ def get_xml(image_name, xml_names):
 def main(image_names, xml_names):
     if not image_names:
         return
-    global out_dir
-    out_dir = mydir + '/atlas'
 
     images = []
     height = 0
@@ -112,7 +110,7 @@ def main(image_names, xml_names):
     y = 0
     root = ET.Element("TextureAtlas")
     texture = ET.SubElement(root, "Texture")
-    texture.text = "images/atlas"
+    texture.text = "textures/atlas"
     regions = ET.SubElement(root, "Regions")
     for i in range(len(image_names)):
         img = images[i]
@@ -139,7 +137,7 @@ def main(image_names, xml_names):
                 , "width": str(w), "height": str(h)})
         
         x += w
-
+    animations = ET.SubElement(root, "Animations")
     tree = ET.ElementTree(root)
     tree.write(f"{out_dir}/atlas.xml", encoding="utf-8", xml_declaration=True)
     atlas = Image.fromarray(res)
